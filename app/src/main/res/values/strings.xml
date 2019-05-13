@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">BlueHeartReceiver</string>
+
+    <string name="load">Load Data</string>
+    <string name="save">Save</string>
+    <string name="connect">Connect</string>
+    <string name="attesa">Waiting for Data income...</string>
+
+    <!--  BluetoothChat -->
+    <string name="send">Send</string>
+    <string name="not_connected">You are not connected to any devices</string>
+    <string name="bt_not_enabled_leaving">Bluetooth not enabled</string>
+    <string name="title_connecting">Connecting...</string>
+    <string name="title_not_connected">Not Connected</string>
+
+    <!--  DeviceListActivity -->
+    <string name="scanning">Searching...</string>
+    <string name="select_device">Select a device</string>
+    <string name="none_paired">No device paired</string>
+    <string name="none_found">No device found</string>
+    <string name="title_paired_devices">Paired Devices</string>
+    <string name="title_other_devices">Other devices available</string>
+    <string name="button_scan">Search Devices</string>
+
+    <!-- Options Menu -->
+    <string name="secure_connect">Connect a device - Secure</string>
+    <string name="insecure_connect">Connect a device - Insecure</string>
+    <string name="discoverable">Make discoverable</string>
+
+    <string name="sample_show_log">Show Log</string>
+    <string name="sample_hide_log">Hide Log</string>
+</resources>
