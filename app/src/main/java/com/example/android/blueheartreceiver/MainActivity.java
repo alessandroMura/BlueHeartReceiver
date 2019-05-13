@@ -194,6 +194,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
     /**
      * The Handler that gets information back from the BluetoothChatService
      */
