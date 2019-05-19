@@ -3,22 +3,17 @@ package com.example.android.blueheartreceiver;
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,13 +31,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MAIN";
     private static final int REQUEST_ENABLE_BT = 2;
 
-    private String filepath; // file da inviare
+    private String filepath; // path of files
     private Button save;
     private TextView attesa;
 
-    String file; // nome file ricevuto
-    String readMessage; // stringa ricevuta
-    String content; // stringa inviata
+    String file; // name of files
+    String content;
 
     private boolean dataReceived = false;
 
@@ -84,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         attesa =  findViewById(R.id.bluetooth_tv_wait);
 
 
-        // Richiesta scrittura/lettura dati
+        // Request write / read permissions
         String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(permissions, 1);
@@ -156,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "setupChat()");
 
         // Initialize the array adapter for the conversation thread
-        mConversationView = (ListView) findViewById(R.id.in);
+        mConversationView = findViewById(R.id.in);
 
         mConversationArrayAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.message);
 
@@ -166,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
         mChatService = new BluetoothService(getParent(), mHandler);
 
         // Initialize the buffer for outgoing messages
-        mOutStringBuffer = new StringBuffer("");
+        mOutStringBuffer = new StringBuffer();
     }
 
 
@@ -208,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                     switch (msg.arg1) {
                         case BluetoothService.STATE_CONNECTED:
 //                            setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
-                            Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Connected!", Toast.LENGTH_LONG).show();
 
                             mConversationArrayAdapter.clear();
                             break;
@@ -232,13 +226,13 @@ public class MainActivity extends AppCompatActivity {
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
                     mConversationArrayAdapter.add(readMessage);
-                    file = "Param_" + System.nanoTime() + ".txt";
+                    file = "File_" + System.nanoTime() + ".txt";
                     dataReceived=true;
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name
                     mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
-                    Toast.makeText(getApplicationContext(), "Connesso a "+ mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Connecting to "+ mConnectedDeviceName, Toast.LENGTH_SHORT).show();
                     break;
                 case Constants.MESSAGE_TOAST:
                     if (null != activity) {
@@ -275,19 +269,18 @@ public class MainActivity extends AppCompatActivity {
             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             StringBuffer stringBuffer = new StringBuffer();
-            while ((text = bufferedReader.readLine()) != null) {
-                stringBuffer.append(text + "\n");
-            }
+            while ((text = bufferedReader.readLine()) != null)
+                stringBuffer.append(text).append("\n");
             content = stringBuffer.toString();
-            Toast.makeText(getApplicationContext(),"File pronto per l'invio",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"File ready to be send",Toast.LENGTH_LONG).show();
             Log.i("MAIN",String.valueOf(content));
         }
         catch(FileNotFoundException e){
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(),"File non trovato",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"File not found",Toast.LENGTH_LONG).show();
         } catch(IOException e){
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(),"Caricamento non riuscito",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"Loading not completed",Toast.LENGTH_LONG).show();
         }
         return content;
     }
@@ -296,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
     public void saveTxt(String file, String testo) {
 
         try {
-            // Salvo i files di testo nella cartella blueHeartReceivedFiles
+            // Saving in blueHeartReceivedFiles folder
             File root = new File(Environment.getExternalStorageDirectory(),"blueHeartReceivedFiles");
             if (!root.exists()) {
                 root.mkdirs();
@@ -305,26 +298,26 @@ public class MainActivity extends AppCompatActivity {
             File blueFile = new File(root,file);
             String filepath = blueFile.getAbsolutePath();
 
-            Log.i("MAIN","Percorso file "+ String.valueOf(filepath));
-            // Se il file non esiste lo crea altrimenti lo sovrascrive
+            Log.i("MAIN","File path "+ String.valueOf(filepath));
+            // If file doesn't exist it overwrites it else it creates a new file
             if (!blueFile.exists())
                 blueFile.createNewFile();
             FileOutputStream fos = new FileOutputStream(blueFile);
             fos.write(String.valueOf(testo).getBytes());
-            Log.i("MAIN","Dimensione file : "+String.valueOf((testo).getBytes().length));
+            Log.i("MAIN","File dimension : "+String.valueOf((testo).getBytes().length));
             fos.close();
-            Log.i("MAIN", "File " + file + " salvato");
-            Toast.makeText(getApplicationContext(),"File salvato ",Toast.LENGTH_LONG).show();
+            Log.i("MAIN", "File " + file + " saved");
+            Toast.makeText(getApplicationContext(),"File saved ",Toast.LENGTH_LONG).show();
             attesa.setText(R.string.attesa);
             attesa.setVisibility(View.VISIBLE);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            Log.e("MAIN", "File " + file + " non trovato");
-            Toast.makeText(getApplicationContext(),"File non trovato ",Toast.LENGTH_LONG).show();
+            Log.e("MAIN", "File " + file + " not found");
+            Toast.makeText(getApplicationContext(),"File not found ",Toast.LENGTH_LONG).show();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e("MAIN", "Errore nel salvataggio ");
-            Toast.makeText(getApplicationContext(),"Errore nel salvataggio ",Toast.LENGTH_LONG).show();
+            Log.e("MAIN", "Saving Error ");
+            Toast.makeText(getApplicationContext(),"Saving Error ",Toast.LENGTH_LONG).show();
         }
     }
 }
