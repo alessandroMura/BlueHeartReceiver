@@ -67,8 +67,6 @@ public class MainActivity extends AppCompatActivity {
      */
     private BluetoothService mChatService = null;
 
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,9 +138,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
-
     /**
      * Set up the UI and background operations for chat.
      */
@@ -185,10 +180,6 @@ public class MainActivity extends AppCompatActivity {
                     Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
-
 
     /**
      * The Handler that gets information back from the BluetoothChatService
